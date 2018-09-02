@@ -25,7 +25,7 @@ sva.org.cn-->
     <ul class="list-group">
         {% for activity_manager in latest_activity_manager_list %}
         <li class="list-group-item list-group-item-secondary">
-            <a href="/apply/{{ activity_manager.id }}/">{{activity_manager.name}}</a>
+            <a href="{% url 'detail' activity_manager.id %}">{{activity_manager.name}}</a>
             <p>
                 {{ activity_manager.description }}
             </p>

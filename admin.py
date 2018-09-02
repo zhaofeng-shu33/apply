@@ -19,7 +19,7 @@ class ActivityManagerAdmin(admin.ModelAdmin):
 class PersonAdmin(admin.ModelAdmin):
     fields = ['name', 'gender', 'choices']
     form = PersonForm
-
+    search_fields = ['name']
 class ActivityAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
 

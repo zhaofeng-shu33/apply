@@ -12,6 +12,8 @@ class PersonForm(ModelForm):
         cleaned_data = super().clean()
         choices = cleaned_data.get("choices")
         activity_cnt = {}
+        if choices is None:
+            return
         for i in choices:
             activity = Activity.objects.get(choice = i)
             key = activity.id

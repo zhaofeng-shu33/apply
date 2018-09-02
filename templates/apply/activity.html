@@ -1,0 +1,133 @@
+﻿<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="utf-8">
+<title>{{activity_manager_name}}</title>
+    {% load static %}
+ <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+ <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+ <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+ <script>
+$('#signupModal').on('hide.bs.modal', function (e) {
+  console.log('hidden')
+})
+// ajax: for name verification first
+function check_and_submit(type){
+    volunteer_name = $("#vn").val();
+    if(volunteer_name==""){ // use bootstrap alert
+        $('#alert-text').html('<strong>Volunteer name</strong> is required.')
+        $('.alert').show();
+        return;
+    }
+    position_id = $("input:checked");
+    // then check the radio buttton is not empty
+    if (position_id.length == 0){
+        $('#alert-text').html('At least one item should be selected.')
+        $('.alert').show();
+        return;
+    }
+    position_id_text = "";
+    for(var i = 0; i< position_id.length-1; i++){
+        position_id_text += String(position_id[i].value) + ",";
+    }
+    position_id_text += String(position_id[i].value)
+    $.ajax({
+        url: '/apply/{{activity_manager_id}}/',
+    dataType: "html", // accept html response
+    data: {'vn':volunteer_name,'id':position_id_text,'type':type},
+    method: 'POST',
+    success: function(returned_data, textStatus, XMLHttpRequest_object){ // should use bootstrap modal dialog box
+    // clear existing table
+    $(".modal-body").empty();
+    // append child to div modal-content
+    $(".modal-body").append(returned_data);
+    // activate it
+    $("#signupModal").modal({});
+    },
+    error: function(XMLHttpRequest_object, textStatus, errorThrown){
+    console.log(textStatus);
+    console.log(errorThrown);
+    }
+    });
+    }
+    </script>
+    <style>
+        ::-webkit-input-placeholder {
+            text-align: center;
+        }
+
+        th, td {
+            text-align: center
+        }
+    </style>
+</head>
+<!--frontend posts a form and backend processes the form -->
+<!-- look forward: it should be an enhancement of sva.org.cn, automatic uploading volunteer application info to
+sva.org.cn-->
+<body>
+        <div class="modal fade" tabindex="-1" role="dialog" id="signupModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                    
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="location.reload()">Refresh</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div><!-- /.modal-content -->
+
+
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <!-- margin bottom $spacer * 1.0 -->
+        <table class="table table-scriped">
+            <thead>
+                <tr>
+                    <td colspan="3">
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+                                    <div id="alert-text"><strong>Volunteer name</strong> is required.</div>
+                                    <button type="button" class="close" onclick="$('.alert').hide();" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                            </div>
+                    </td>
+                </tr>
+                <tr><td/><td colspan="2">
+                        <input type="text" class="form-control" placeholder="volunteer name" id="vn" aria-describedby="volunteer name" style>
+                </tr></td><td/>
+            <tr>
+                <th>序号</th> <th> 内容</th> <th> 剩余可报名人数</th> <th> 已报名同学</th>
+            </tr>
+         </thead>
+         <tfoot>
+            <tr><td></td>
+                <td><button class="btn btn-outline-secondary" type="button" onclick="check_and_submit(1)">报名</button></td>
+                
+                <td><button class="btn btn-outline-secondary" type="button" onclick="check_and_submit(0)">取消报名</button></td>                
+                <td></td>
+            </tr>
+        </tfoot>
+         <tbody>
+            {% for item in positions %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{item.content}}</td>
+              <td>
+                    <label class="btn btn-secondary">
+                        <input type="checkbox" autocomplete="off"  value="{{item.code}}" {% if item.left_number == 0 %}disabled{% endif %}> {{item.left_number}}
+                    </label>
+              </td>
+              <td>
+                  {{item.name_list}}</td>
+            </tr>
+            {% endfor %}
+    </tbody>
+        </table>
+</body>
+</html>
+

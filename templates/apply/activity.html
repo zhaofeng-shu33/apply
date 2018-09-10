@@ -34,7 +34,7 @@ function check_and_submit(type){
     }
     position_id_text += String(position_id[i].value)
     $.ajax({
-        url: '/apply/{{activity_manager_id}}/',
+        url: "{% url 'detail' activity_manager_id %}",
     dataType: "html", // accept html response
     data: {'vn':volunteer_name,'id':position_id_text,'type':type},
     method: 'POST',

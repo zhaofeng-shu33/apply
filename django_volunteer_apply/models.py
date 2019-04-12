@@ -24,7 +24,7 @@ class Choice(models.Model):
         return self.activity.name + self.name
 
 class Person(models.Model):
-    name = models.CharField(max_length=9)
+    name = models.CharField(max_length=11)
     gender = models.CharField(max_length=1, choices=(('M','Male'),('F', 'Female')), default='M')
     choices = models.ManyToManyField(Choice, blank=True)
     def __str__(self):

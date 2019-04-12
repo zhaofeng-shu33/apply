@@ -10,6 +10,21 @@
  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
  <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
  <script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 $('#signupModal').on('hide.bs.modal', function (e) {
   console.log('hidden')
 })
@@ -33,23 +48,25 @@ function check_and_submit(type){
         position_id_text += String(position_id[i].value) + ",";
     }
     position_id_text += String(position_id[i].value)
+    var csrftoken = getCookie('csrftoken');
     $.ajax({
         url: "{% url 'detail' activity_manager_id %}",
-    dataType: "html", // accept html response
-    data: {'vn':volunteer_name,'id':position_id_text,'type':type},
-    method: 'POST',
-    success: function(returned_data, textStatus, XMLHttpRequest_object){ // should use bootstrap modal dialog box
-    // clear existing table
-    $(".modal-body").empty();
-    // append child to div modal-content
-    $(".modal-body").append(returned_data);
-    // activate it
-    $("#signupModal").modal({});
-    },
-    error: function(XMLHttpRequest_object, textStatus, errorThrown){
-    console.log(textStatus);
-    console.log(errorThrown);
-    }
+	headers:{'X-CSRFToken': csrftoken},
+    	dataType: "html", // accept html response
+    	data: {'vn':volunteer_name,'id':position_id_text,'type':type},
+    	method: 'POST',
+    	success: function(returned_data, textStatus, XMLHttpRequest_object){ // should use bootstrap modal dialog box
+    	    // clear existing table
+    	    $(".modal-body").empty();
+    	    // append child to div modal-content
+    	    $(".modal-body").append(returned_data);
+    	    // activate it
+    	    $("#signupModal").modal({});
+    	},
+    	error: function(XMLHttpRequest_object, textStatus, errorThrown){
+            console.log(textStatus);
+    	    console.log(errorThrown);
+    	}
     });
     }
     </script>
@@ -98,7 +115,7 @@ sva.org.cn-->
                     </td>
                 </tr>
                 <tr><td/><td colspan="2">
-                        <input type="text" class="form-control" placeholder="volunteer name" id="vn" aria-describedby="volunteer name" style>
+                        <input type="text" class="form-control" placeholder="volunteer name" id="vn" aria-describedby="name" style>
                 </tr></td><td/>
             <tr>
                 <th>序号</th> <th> 内容</th> <th> 剩余可报名人数</th> <th> 已报名同学</th>
